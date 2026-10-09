@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Zoom in/out disabled for better UX on mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Saad & Taronnyo - A Symphony Written in Stardust</title>
     
     <!-- Load Tailwind CSS -->
@@ -19,14 +20,25 @@
             margin: 0;
             padding: 0;
             font-family: 'Poppins', sans-serif;
-            /* Dark Crimson and Midnight Rose gradient */
+            color: #fdf2f4;
+            min-height: 100vh;
+            position: relative;
+            /* Prevent horizontal overflow completely */
+            overflow-x: hidden; 
+        }
+
+        /* Fixed Background Container to prevent repaints on scroll */
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
             background: linear-gradient(-45deg, #1f040a, #4a0917, #21030b, #3b0513);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
-            color: #fdf2f4;
-            overflow-x: hidden;
-            min-height: 100vh;
-            position: relative;
+            overflow: hidden;
         }
 
         @keyframes gradientBG {
@@ -43,48 +55,48 @@
             font-family: 'Cinzel', serif;
         }
 
-        /* Ambient Glowing Orbs */
+        /* Ambient Glowing Orbs - Highly Optimized using Radial Gradient */
         .glowing-orb {
             position: absolute;
             border-radius: 50%;
-            filter: blur(100px);
             z-index: 0;
-            opacity: 0.4;
             pointer-events: none;
+            /* Hint browser to use GPU for animations */
+            will-change: transform;
         }
 
         .orb-1 {
-            width: 400px;
-            height: 400px;
-            background: #ff0040;
-            top: -10%;
-            left: -10%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(255,0,64,0.3) 0%, rgba(255,0,64,0) 60%);
+            top: -20%;
+            left: -20%;
             animation: floatOrb 20s infinite alternate ease-in-out;
         }
 
         .orb-2 {
-            width: 500px;
-            height: 500px;
-            background: #800020; /* Burgundy */
-            bottom: -20%;
-            right: -10%;
+            width: 1000px;
+            height: 1000px;
+            background: radial-gradient(circle, rgba(128,0,32,0.3) 0%, rgba(128,0,32,0) 60%);
+            bottom: -30%;
+            right: -20%;
             animation: floatOrb 25s infinite alternate-reverse ease-in-out;
         }
         
         .orb-3 {
-            width: 300px;
-            height: 300px;
-            background: #ff1a66;
-            top: 40%;
-            left: 40%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255,26,102,0.15) 0%, rgba(255,26,102,0) 60%);
+            top: 30%;
+            left: 30%;
             animation: floatOrb 18s infinite alternate ease-in-out;
-            opacity: 0.2;
         }
 
+        /* Using translate3d for GPU Acceleration */
         @keyframes floatOrb {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(50px, 100px) scale(1.2); }
-            100% { transform: translate(-50px, 50px) scale(0.9); }
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(50px, 100px, 0) scale(1.2); }
+            100% { transform: translate3d(-50px, 50px, 0) scale(0.9); }
         }
 
         /* Glassmorphism Cards */
@@ -98,6 +110,7 @@
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
             position: relative;
             overflow: hidden;
+            will-change: transform;
         }
         
         .glass-card::before {
@@ -124,6 +137,7 @@
             animation: pulse 1.5s infinite;
             color: #ff1a66;
             text-shadow: 0 0 25px rgba(255, 26, 102, 0.9);
+            will-change: transform;
         }
 
         @keyframes pulse {
@@ -183,10 +197,13 @@
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen py-12 px-4 md:px-8">
 
-    <!-- Glowing Background Orbs -->
-    <div class="glowing-orb orb-1"></div>
-    <div class="glowing-orb orb-2"></div>
-    <div class="glowing-orb orb-3"></div>
+    <!-- Fixed Background Wrapper -->
+    <div class="bg-container">
+        <!-- Glowing Background Orbs -->
+        <div class="glowing-orb orb-1"></div>
+        <div class="glowing-orb orb-2"></div>
+        <div class="glowing-orb orb-3"></div>
+    </div>
 
     <!-- Interactive Canvas -->
     <canvas id="petal-canvas"></canvas>
@@ -319,7 +336,7 @@
         // INTERACTIVE ROSE PETALS ANIMATION
         // =========================================================================
         const canvas = document.getElementById('petal-canvas');
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d', { alpha: true });
         let petals = [];
 
         // Resize canvas to window size
